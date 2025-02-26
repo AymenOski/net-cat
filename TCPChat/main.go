@@ -22,11 +22,10 @@ func main() {
 		fmt.Println("[USAGE]: ./TCPChat $port")
 		return
 	}
-	port :=  "8989" 
-	if len(os.Args) == 2  {
-		 port  =  os.Args[1]
+	port := "8989"
+	if len(os.Args) == 2 {
+		port = os.Args[1]
 	}
-
 
 	ln, err := net.Listen("tcp", ":"+port)
 	if err != nil {

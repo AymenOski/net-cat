@@ -13,18 +13,23 @@ var (
 )
 
 func HandleClient(conn net.Conn) {
-	// defer conn.Close()
-	buff := make([]byte, 15)
+	buff := make([]byte, 1)
 	// writes data to the connection
 	conn.Write([]byte(Welcoming()))
-	lenn, err := conn.Read(buff)
-	if err != nil {
-		fmt.Println(err)
-		return
+	for len(buff) < 3 || len(buff) > 15 {
+		_, err := conn.Read(buff)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		if len(buff) < 3 || len(buff) > 15 {
+			conn.Write([]byte("The name must be between 3 and 15 characters\n"))
+			time.Sleep(2 * time.Second)
+		}
 	}
 
 	MU.Lock()
-	Clients[conn] = string(buff[:lenn-1])
+	Clients[conn] = string(buff[:len(buff)-1])
 	MU.Unlock()
 
 	Broadcast("One member has join the chat "+string(Clients[conn]), conn)
