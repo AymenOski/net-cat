@@ -28,6 +28,7 @@ func main() {
 	}
 
 	ln, err := net.Listen("tcp", ":"+port)
+	fmt.Println("Server is listening on port", port)
 	if err != nil {
 		log.Fatal(err)
 	}
