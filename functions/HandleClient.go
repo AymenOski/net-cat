@@ -24,7 +24,7 @@ func HandleClient(conn net.Conn) {
 	Clients[conn] = ClientName
 	MU.Unlock()
 
-	Broadcast(fmt.Sprintf("%s has joined our chat...\n", ClientName), conn)
+	Broadcast(fmt.Sprintf("🟢%s has joined our chat...\n", ClientName), conn)
 	conn.Write([]byte(fmt.Sprintf("[%s] [%s] : ", time.Now().Format("2006-01-02 15:04:05"), Clients[conn])))
 	go SendingMsgs(conn)
 }
