@@ -2,7 +2,6 @@ package functions
 
 import (
 	"bufio"
-	"fmt"
 	"net"
 	"strings"
 	"time"
@@ -47,7 +46,6 @@ func GetClientName(conn net.Conn, ClientName *string) bool {
 			time.Sleep(2 * time.Second)
 		} else {
 			*ClientName = temp
-			fmt.Printf("🟢%s has joined the groupe chat\n", *ClientName)
 			return true
 		}
 	}
