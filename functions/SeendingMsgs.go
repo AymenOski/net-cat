@@ -6,6 +6,8 @@ import (
 	"net"
 	"strings"
 	"time"
+
+	logger "net-cat/log"
 )
 
 func SendingMsgs(sender net.Conn) {
@@ -14,11 +16,12 @@ func SendingMsgs(sender net.Conn) {
 		msg, err := bufio.NewReader(sender).ReadString('\n')
 		if err != nil {
 			tempName := Clients[sender]
-			fmt.Printf("🔴%s has left the groupe chat.\n", Clients[sender])
+			fmt.Printf(Red+"🔴%s has left the groupe chat.\n"+Reset, Clients[sender])
+			logger.Log(2, fmt.Sprintf("Client `%s` has left the groupe chat...\n", tempName), nil)
 			MU.Lock()
 			delete(Clients, sender)
 			MU.Unlock()
-			Broadcast(fmt.Sprintf("🔴%s has left the chat.\n", tempName), sender)
+			Broadcast(fmt.Sprintf(Red+"🔴%s has left the chat.\n"+Reset, tempName), sender)
 			return
 		}
 		if len(msg) > 0 {

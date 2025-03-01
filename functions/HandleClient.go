@@ -2,14 +2,23 @@ package functions
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"sync"
 	"time"
+
+	logger "net-cat/log"
 )
 
 var (
 	Clients = make(map[net.Conn]string, 10)
 	MU      sync.Mutex
+)
+
+const (
+	Red   = "\033[31m"
+	Green = "\033[32m"
+	Reset = "\033[0m"
 )
 
 func HandleClient(conn net.Conn) {
@@ -27,15 +36,18 @@ func HandleClient(conn net.Conn) {
 			}
 		}
 		if check {
-			fmt.Printf("🟢%s has joined the groupe chat\n", ClientName)
+			log.Println()
+			fmt.Printf(Green+"🟢%s has joined the groupe chat\n"+Reset, ClientName)
 			break
 		}
 	}
 	MU.Lock()
 	Clients[conn] = ClientName
 	MU.Unlock()
-
-	Broadcast(fmt.Sprintf("🟢%s has joined our chat...\n", ClientName), conn)
+	MU.Lock()
+	Broadcast(fmt.Sprintf(Green+"🟢%s has joined our chat...\n"+Reset, ClientName), conn)
+	logger.Log(2, fmt.Sprintf("Client `%s` has joined the groupe chat...\n", ClientName), nil)
+	MU.Unlock()
 	conn.Write([]byte(fmt.Sprintf("[%s] [%s] : ", time.Now().Format("2006-01-02 15:04:05"), Clients[conn])))
 	go SendingMsgs(conn)
 }
