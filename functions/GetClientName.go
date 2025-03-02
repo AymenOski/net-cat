@@ -13,8 +13,8 @@ func GetClientName(conn net.Conn, ClientName *string) bool {
 	if err != nil {
 		MU.Lock()
 		// talk back to the server
-		conn.Close()
 		delete(Clients, conn)
+		conn.Close()
 		MU.Unlock()
 		return false
 	}
