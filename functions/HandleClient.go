@@ -2,7 +2,6 @@ package functions
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"sync"
 	"time"
@@ -36,15 +35,12 @@ func HandleClient(conn net.Conn) {
 			}
 		}
 		if check {
-			log.Println()
 			fmt.Printf(Green+"🟢%s has joined the groupe chat\n"+Reset, ClientName)
 			break
 		}
 	}
 	MU.Lock()
 	Clients[conn] = ClientName
-	MU.Unlock()
-	MU.Lock()
 	Broadcast(fmt.Sprintf(Green+"🟢%s has joined our chat...\n"+Reset, ClientName), conn)
 	logger.Log(2, fmt.Sprintf("Client `%s` has joined the groupe chat...\n", ClientName), nil)
 	MU.Unlock()

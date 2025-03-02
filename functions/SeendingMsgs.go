@@ -17,9 +17,11 @@ func SendingMsgs(sender net.Conn) {
 		if err != nil {
 			tempName := Clients[sender]
 			fmt.Printf(Red+"🔴%s has left the groupe chat.\n"+Reset, Clients[sender])
-			logger.Log(2, fmt.Sprintf("Client `%s` has left the groupe chat...\n", tempName), nil)
+			logger.Log(2, "The Client "+sender.LocalAddr().String()+" Has lost connection."+"\n", nil)
+			logger.Log(2, fmt.Sprintf("Client `%s` has left the groupe chat...\n", Clients[sender]), nil)
 			MU.Lock()
 			delete(Clients, sender)
+			sender.Close()
 			MU.Unlock()
 			Broadcast(fmt.Sprintf(Red+"🔴%s has left the chat.\n"+Reset, tempName), sender)
 			return
