@@ -8,6 +8,7 @@ import (
 )
 
 func GetClientName(conn net.Conn, ClientName *string) bool {
+	MX.Lock()
 	conn.Write([]byte(Welcoming()))
 	temp, err := bufio.NewReader(conn).ReadString('\n')
 	if err != nil {
@@ -25,16 +26,19 @@ func GetClientName(conn net.Conn, ClientName *string) bool {
 			time.Sleep(1 * time.Second)
 			conn.Write([]byte("👉Try again..\n"))
 			time.Sleep(2 * time.Second)
+			MX.Unlock()
 		} else if k == 2 {
 			conn.Write([]byte("❌ Invalid name! Inprintable caracteres are not allowed in the name.\n"))
 			time.Sleep(1 * time.Second)
 			conn.Write([]byte("👉Try again..\n"))
 			time.Sleep(2 * time.Second)
+			MX.Unlock()
 		} else if k == 3 {
 			conn.Write([]byte("❌ Invalid name! Spaces are not allowed in the name.\n"))
 			time.Sleep(1 * time.Second)
 			conn.Write([]byte("👉Try again..\n"))
 			time.Sleep(2 * time.Second)
+			MX.Unlock()
 		}
 	}
 	if check && k == 0 {
@@ -45,8 +49,10 @@ func GetClientName(conn net.Conn, ClientName *string) bool {
 			time.Sleep(1 * time.Second)
 			conn.Write([]byte("👉Try again..\n"))
 			time.Sleep(2 * time.Second)
+			MX.Unlock()
 		} else {
 			*ClientName = temp
+			MX.Unlock()
 			return true
 		}
 	}

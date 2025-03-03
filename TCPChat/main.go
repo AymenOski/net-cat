@@ -29,21 +29,22 @@ func main() {
 	}
 	defer ln.Close()
 	fmt.Println("Chat Server Started : server listening for connections on port", port)
-	Cmp := 0
-	logger.Log(0, port, err)
+	// Cmp := 0
+	logger.Log(1, fmt.Sprintf("Chat Server Started : server listening for connections on the port %s\n", port), err)
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	// Channeling the os.Interrupt and syscall.SIGTERM signals
 	go func() {
 		<-sigChan
-		log.Println("\nThe server is closing")
+		fmt.Println("\nThe server is closing")
+		logger.Log(1, "Chat Server Closed. The server is no longer listening.", err)
 		ln.Close()
-		functions.MU.Lock()
-		for conn := range functions.Clients {
-			conn.Write([]byte("The server is closed, please disconnect!\n"))
-			conn.Close()
+		if functions.Clients != nil {
+			for conn := range functions.Clients {
+				conn.Write([]byte("The server is closed, please disconnect!\n"))
+				conn.Close()
+			}
 		}
-		functions.MU.Unlock()
 		os.Exit(0)
 	}()
 	for {
@@ -51,16 +52,15 @@ func main() {
 		if err != nil {
 			continue // keep trying to connect
 		} else {
-			Cmp++
+			// Cmp++
 			logger.Log(2, "New connection from "+conn.LocalAddr().String()+"\n", nil)
 		}
 		// if 10 clients are connected, send a message to the new client
-		if Cmp > 2 {
-			conn.Write([]byte("The group is full 10/10 , please wait for someone to disconnect!\n"))
-			conn.Close()
-			Cmp--
-			continue
-		}
+		// if Cmp > 2 {
+		// 	conn.Write([]byte("The group is full 10/10 , please wait for someone to disconnect!\n"))
+		// 	conn.Close()
+		// 	continue
+		// }
 		go functions.HandleClient(conn)
 	}
 }

@@ -13,16 +13,14 @@ func Log(Case int, str string, errInput error) {
 		return
 	}
 	logMessage := ""
-	if Case == 0 {
-		msg := fmt.Sprintf("Chat Server Started : server listening for connections on the port %s\n", str)
-		logMessage = fmt.Sprintf("Info : %s %s", time.Now().Format("2006-01-02 15:04:05"), msg)
-	} else if Case == 1 {
-		msg := fmt.Sprintf("%s\n", errInput)
-		logMessage = fmt.Sprintf("Error: %s %s", time.Now().Format("2006-01-02 15:04:05"), msg)
+	Time := time.Now().Format("2006-01-02 15:04:05")
+	// Info msgs
+	if Case == 1 {
+		logMessage = fmt.Sprintf("Info: %s %s", Time, str)
+		// Err msgs
 	} else if Case == 2 {
-		logMessage = fmt.Sprintf("Info: %s %s", time.Now().Format("2006-01-02 15:04:05"), str)
-	} else if Case == 3 {
-		logMessage = fmt.Sprintf("Info: %s %s", time.Now().Format("2006-01-02 15:04:05"), str)
+		msg := fmt.Sprintf("%s\n", errInput)
+		logMessage = fmt.Sprintf("Error: %s %s", Time, msg)
 	}
 	_, err = file.WriteString(logMessage)
 	if err != nil {

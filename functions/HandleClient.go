@@ -12,6 +12,7 @@ import (
 var (
 	Clients = make(map[net.Conn]string, 10)
 	MU      sync.Mutex
+	MX      sync.Mutex
 )
 
 const (
