@@ -5,19 +5,21 @@ import (
 	"net"
 	"strings"
 	"time"
+
+	"net-cat/utils"
 )
 
-func GetClientName(conn net.Conn, ClientName *string) bool {
-	MX.Lock()
-	conn.Write([]byte(Welcoming()))
+func GetClientName(conn net.Conn, ClientName *string) (bool, bool) {
+	// The second bool ensures that if the client disconnects during the name input phase, we properly handle cleanup and exit the goroutine.
+	conn.Write([]byte(utils.Welcoming()))
 	temp, err := bufio.NewReader(conn).ReadString('\n')
 	if err != nil {
-		MU.Lock()
+		utils.MU.Lock()
 		// talk back to the server
-		delete(Clients, conn)
 		conn.Close()
-		MU.Unlock()
-		return false
+		utils.Cmp--
+		utils.MU.Unlock()
+		return false, true
 	}
 	check, k := FiltringCheck(temp)
 	if !check {
@@ -26,19 +28,16 @@ func GetClientName(conn net.Conn, ClientName *string) bool {
 			time.Sleep(1 * time.Second)
 			conn.Write([]byte("👉Try again..\n"))
 			time.Sleep(2 * time.Second)
-			MX.Unlock()
 		} else if k == 2 {
 			conn.Write([]byte("❌ Invalid name! Inprintable caracteres are not allowed in the name.\n"))
 			time.Sleep(1 * time.Second)
 			conn.Write([]byte("👉Try again..\n"))
 			time.Sleep(2 * time.Second)
-			MX.Unlock()
 		} else if k == 3 {
 			conn.Write([]byte("❌ Invalid name! Spaces are not allowed in the name.\n"))
 			time.Sleep(1 * time.Second)
 			conn.Write([]byte("👉Try again..\n"))
 			time.Sleep(2 * time.Second)
-			MX.Unlock()
 		}
 	}
 	if check && k == 0 {
@@ -49,12 +48,10 @@ func GetClientName(conn net.Conn, ClientName *string) bool {
 			time.Sleep(1 * time.Second)
 			conn.Write([]byte("👉Try again..\n"))
 			time.Sleep(2 * time.Second)
-			MX.Unlock()
 		} else {
 			*ClientName = temp
-			MX.Unlock()
-			return true
+			return true, false
 		}
 	}
-	return false
+	return false, false
 }

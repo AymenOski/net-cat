@@ -1,0 +1,4 @@
+Info: 2025-03-05 16:37:23 Chat Server Started : server listening for connections on the port 8989
+Error: 2025-03-05 16:37:25 listen tcp :8989: bind: address already in use
+Info: 2025-03-05 16:37:30 New connection from 127.0.0.1:8989
+Info: 2025-03-05 16:37:43 Chat Server Closed. The server is no longer listening.

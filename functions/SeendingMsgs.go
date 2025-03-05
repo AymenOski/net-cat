@@ -8,6 +8,7 @@ import (
 	"time"
 
 	logger "net-cat/log"
+	"net-cat/utils"
 )
 
 func SendingMsgs(sender net.Conn) {
@@ -15,28 +16,30 @@ func SendingMsgs(sender net.Conn) {
 		// Reads and listen for messages
 		msg, err := bufio.NewReader(sender).ReadString('\n')
 		if err != nil {
-			tempName := Clients[sender]
-			fmt.Printf(Red+"🔴%s has left the groupe chat.\n"+Reset, Clients[sender])
+			utils.MU.Lock()
+			tempName := utils.Clients[sender]
+			fmt.Printf(utils.Red+"🔴%s has left the groupe chat.\n"+utils.Reset, utils.Clients[sender])
 			logger.Log(2, "The Client "+sender.LocalAddr().String()+" Has lost connection."+"\n", nil)
-			logger.Log(2, fmt.Sprintf("Client `%s` has left the groupe chat...\n", Clients[sender]), nil)
-			MU.Lock()
-			delete(Clients, sender)
+			logger.Log(2, fmt.Sprintf("Client `%s` has left the groupe chat...\n", utils.Clients[sender]), nil)
+			delete(utils.Clients, sender)
 			sender.Close()
-			MU.Unlock()
-			Broadcast(fmt.Sprintf(Red+"🔴%s has left the chat.\n"+Reset, tempName), sender)
+			utils.Cmp--
+			fmt.Println(utils.Cmp)
+			Broadcast(fmt.Sprintf(utils.Red+"🔴%s has left the chat.\n"+utils.Reset, tempName), sender)
+			utils.MU.Unlock()
 			return
 		}
 		if len(msg) > 0 {
 			msg = strings.ReplaceAll(msg, "\r\n", "")
 			msg = strings.ReplaceAll(msg, "\n", "")
-			for Client := range Clients {
+			for Client := range utils.Clients {
 				// send the msg to all clients except the sender
 				if Client != sender {
-					Client.Write([]byte(fmt.Sprintf("\n[%s] [%s] : %s", time.Now().Format("2006-01-02 15:04:05"), Clients[sender], msg)))
-					Client.Write([]byte(fmt.Sprintf("\n[%s] [%s] : %s", time.Now().Format("2006-01-02 15:04:05"), Clients[Client], "")))
+					Client.Write([]byte(fmt.Sprintf("\n[%s] [%s] : %s", time.Now().Format("2006-01-02 15:04:05"), utils.Clients[sender], msg)))
+					Client.Write([]byte(fmt.Sprintf("\n[%s] [%s] : %s", time.Now().Format("2006-01-02 15:04:05"), utils.Clients[Client], "")))
 				} else {
 					// send this msg to the sender
-					Client.Write([]byte(fmt.Sprintf("[%s] [%s] : %s", time.Now().Format("2006-01-02 15:04:05"), Clients[sender], "")))
+					Client.Write([]byte(fmt.Sprintf("[%s] [%s] : %s", time.Now().Format("2006-01-02 15:04:05"), utils.Clients[sender], "")))
 				}
 			}
 		}

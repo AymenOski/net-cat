@@ -5,7 +5,7 @@ func FiltringCheck(temp string) (bool, int) {
 		return false, 1
 	}
 	for i := 0; i < len(temp); i++ {
-		if temp[i]==' ' {
+		if temp[i] == ' ' {
 			return false, 3
 		}
 		if temp[i] < 32 || temp[i] > 126 {

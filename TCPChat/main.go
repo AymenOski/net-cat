@@ -10,6 +10,7 @@ import (
 
 	"net-cat/functions"
 	logger "net-cat/log"
+	"net-cat/utils"
 )
 
 func main() {
@@ -24,12 +25,11 @@ func main() {
 
 	ln, err := net.Listen("tcp", ":"+port)
 	if err != nil {
-		logger.Log(1, "", err)
+		logger.Log(2, "", err)
 		log.Fatal(err)
 	}
 	defer ln.Close()
 	fmt.Println("Chat Server Started : server listening for connections on port", port)
-	// Cmp := 0
 	logger.Log(1, fmt.Sprintf("Chat Server Started : server listening for connections on the port %s\n", port), err)
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
@@ -37,10 +37,11 @@ func main() {
 	go func() {
 		<-sigChan
 		fmt.Println("\nThe server is closing")
-		logger.Log(1, "Chat Server Closed. The server is no longer listening.", err)
+		logger.Log(1, "Chat Server Closed. The server is no longer listening.\n", err)
 		ln.Close()
-		if functions.Clients != nil {
-			for conn := range functions.Clients {
+		if utils.Clients != nil {
+			for conn := range utils.Clients {
+				// sending to all clients that the server is closing
 				conn.Write([]byte("The server is closed, please disconnect!\n"))
 				conn.Close()
 			}
@@ -51,16 +52,17 @@ func main() {
 		conn, err := ln.Accept() // this accept data that u can manipulate
 		if err != nil {
 			continue // keep trying to connect
-		} else {
-			// Cmp++
-			logger.Log(2, "New connection from "+conn.LocalAddr().String()+"\n", nil)
 		}
+		utils.Cmp++
+		logger.Log(1, "New connection from "+conn.LocalAddr().String()+"\n", nil)
 		// if 10 clients are connected, send a message to the new client
-		// if Cmp > 2 {
-		// 	conn.Write([]byte("The group is full 10/10 , please wait for someone to disconnect!\n"))
-		// 	conn.Close()
-		// 	continue
-		// }
+		// it is recommended to test for 2 client to see
+		if utils.Cmp > 10 {
+			utils.Cmp--
+			conn.Write([]byte("The group is full 10/10 , please wait for someone to disconnect!\n"))
+			conn.Close()
+			continue
+		}
 		go functions.HandleClient(conn)
 	}
 }
