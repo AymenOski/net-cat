@@ -12,9 +12,14 @@ import (
 func HandleClient(conn net.Conn) {
 	var ClientName string
 	for {
-		check, l := GetClientName(conn, &ClientName)
-		if l {
+		check, clientLost := GetClientName(conn, &ClientName)
+		if clientLost {
+			logger.Log(1, "The Client "+conn.LocalAddr().String()+" has lost connection"+"\n", nil)
 			return
+		}
+		// to munimise time complexity we should put continue
+		if !check {
+			continue
 		}
 		for _, Client := range utils.Clients {
 			if Client == ClientName {
