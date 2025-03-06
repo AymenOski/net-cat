@@ -17,16 +17,15 @@ func HandleClient(conn net.Conn) {
 			logger.Log(1, "The Client "+conn.LocalAddr().String()+" has lost connection"+"\n", nil)
 			return
 		}
-		// to munimise time complexity we should put continue
+		// Skip invalid names early to avoid unnecessary processing
 		if !check {
 			continue
 		}
 		for _, Client := range utils.Clients {
 			if Client == ClientName {
 				conn.Write([]byte("This name is already taken.\n"))
-				time.Sleep(1 * time.Second)
 				conn.Write([]byte("👉Try again..\n"))
-				time.Sleep(2 * time.Second)
+				time.Sleep(1 * time.Second)
 				check = false
 				continue
 			}
