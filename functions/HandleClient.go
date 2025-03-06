@@ -39,7 +39,7 @@ func HandleClient(conn net.Conn) {
 	utils.MU.Lock()
 	utils.Clients[conn] = ClientName
 	Broadcast(fmt.Sprintf(utils.Green+"🟢%s has joined our chat...\n"+utils.Reset, ClientName), conn)
-	logger.Log(2, fmt.Sprintf("Client `%s` has joined the groupe chat...\n", ClientName), nil)
+	logger.Log(1, fmt.Sprintf("Client `%s` has joined the groupe chat...\n", ClientName), nil)
 	conn.Write([]byte(fmt.Sprintf("[%s] [%s] : ", time.Now().Format("2006-01-02 15:04:05"), utils.Clients[conn])))
 	utils.MU.Unlock()
 	go SendingMsgs(conn)
