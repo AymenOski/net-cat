@@ -28,7 +28,7 @@ func GetClientName(conn net.Conn, ClientName *string) (bool, bool) {
 			conn.Write([]byte("👉Try again..\n"))
 			time.Sleep(1 * time.Second)
 		} else if k == 2 {
-			conn.Write([]byte("❌ Invalid name! Inprintable caracteres are not allowed in the name.\n"))
+			conn.Write([]byte("❌ Invalid name! Only alphabet caracteres are allowed in the name.\n"))
 			conn.Write([]byte("👉Try again..\n"))
 			time.Sleep(1 * time.Second)
 		} else if k == 3 {

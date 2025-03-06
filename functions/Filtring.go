@@ -8,7 +8,7 @@ func FiltringCheck(temp string) (bool, int) {
 		if temp[i] == ' ' {
 			return false, 3
 		}
-		if temp[i] < 32 || temp[i] > 126 {
+		if !(temp[i] >= 65 && temp[i] <= 90) && !(temp[i] >= 97 && temp[i] <= 122) {
 			if temp[i] == 13 || temp[i] == 10 {
 				continue // ignore '\n' and '\r\n'
 			}
