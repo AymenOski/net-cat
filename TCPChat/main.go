@@ -55,8 +55,8 @@ func main() {
 		}
 		utils.Cmp++
 		// if 10 clients are connected, send a message to the new client
-		// it is recommended to test for 2 client to see
-		if utils.Cmp > 2 {
+		// it is recommended to test for 2 client to see the functionality
+		if utils.Cmp > 10 {
 			utils.Cmp--
 			conn.Write([]byte("The group is full 10/10 , please wait for someone to disconnect!\n"))
 			conn.Close()
